@@ -1,0 +1,27 @@
+{
+  "name": "eu-covid-qr-parser-demo",
+  "version": "1.0.0",
+  "description": "Quick Node.js PoC to parse images with european vaccination certificate QR code",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rascafr/eu-covid-qr-parser-demo.git"
+  },
+  "author": "Francois Leparoux",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rascafr/eu-covid-qr-parser-demo/issues"
+  },
+  "homepage": "https://github.com/rascafr/eu-covid-qr-parser-demo#readme",
+  "dependencies": {
+    "base45": "^3.0.0",
+    "cbor": "^8.0.0",
+    "jimp": "^0.16.1",
+    "jsqr": "^1.4.0",
+    "zlib": "^1.0.5"
+  }
+}
