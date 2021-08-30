@@ -1,12 +1,14 @@
 # EU Covid QR code parser
 
-Quick Node.js PoC to parse images with european vaccination certificate QR code
+Quick Node.js PoC to parse and create QR codes images with european vaccination certificate QR code
 
 ## How it works
 
 ```
 Read image -> find & decode QRcode -> remove HC1 (health certificate) prefix -> base45 decode -> CBOR decode required fields
 ```
+
+Same thing for the QRcode creation... reverse order.
 
 ## Install
 
@@ -47,6 +49,7 @@ Decoded in 499 ms: {
 ## Helpful sources
 
 - https://ehealth.vyncke.org/
+- https://github.com/ehn-dcc-development/hcert-spec/blob/main/hcert_spec.md
 - https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf
 
 ## Used libraries
