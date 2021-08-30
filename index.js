@@ -1,9 +1,5 @@
-const Jimp = require("jimp");
-const jsQR = require("jsqr");
-const fs = require('fs');
-const base45 = require('base45');
-const cbor = require('cbor');
-const { inflate } = require('zlib');
+const { pass2qr } = require("./lib/generator");
+const { qr2pass } = require("./lib/extractor");
 
 const IMG_PATH = process.argv[2];
 if (!IMG_PATH) {
@@ -13,63 +9,66 @@ if (!IMG_PATH) {
 
 (async () => {
 
+    // Create a dummy QR code (check function code)
+    await createOne();
+
+    // Try to parse an existing one
     const ts = new Date();
     console.log('Opening', IMG_PATH, '...');
-    const extrInfo = await extractInfoFromQRCodeImage(IMG_PATH);
+    const extrInfo = await qr2pass(IMG_PATH);
     console.log('Decoded in', (new Date() - ts), 'ms:', extrInfo);
 
 })();
 
-async function extractInfoFromQRCodeImage(imagePath) {
 
-    const HEALTH_CERTIFICATE_PREFIX = 'HC1:';
-    // 1    -> country of establishment?
-    // 4    -> last vaccination date
-    // 6    -> QR code generation date
-    // -260 -> version, name, birth date, certif signature
-    const CLAIM_KEY_CERT = -260;
-    const CLAIM_KEY_V1EU = 1;
+async function createOne() {
 
-    return new Promise(async (resolve, reject) => {
+    // https://github.com/ehn-dcc-development/hcert-spec/blob/main/hcert_spec.md
+    const AGLO_SIGN = -123 // Protected Header Signature Algorithm (may-be public);
+    const SIGN_KEY_ID = Buffer.from([0x7c, /* ... 8 bytes sequence for the used algorithm signature (may-be public) */]);
+    const HCERT_SIGN = Buffer.from([/* ... 64 bytes sequence health certificate signature */]);
 
-        // read the image as color buffer
-        const image = await Jimp.read(fs.readFileSync(imagePath));
-
-        // convert to unsigned 8bit values so we can use jsQR
-        const qrCodeImageArray = new Uint8ClampedArray(image.bitmap.data.buffer);
-
-        // decode the QR image data
-        const code = jsQR(
-            qrCodeImageArray,
-            image.bitmap.width,
-            image.bitmap.height
-        );
-
-        // check prefix health certificate
-        if (!code.data || !code.data.startsWith(HEALTH_CERTIFICATE_PREFIX)) {
-            return reject(`QR code payload prefix ${HEALTH_CERTIFICATE_PREFIX} not found, skipping`);
+    const obj = {
+        v: [
+        {
+            // Unique certificate identifier
+            ci: 'urn:uvci:01:FR:WOWSUCHVACCINE#42',
+            // Member State or third country in which the vaccine was administered
+            co: 'FR',
+            // Doses count
+            dn: 2,
+            // Date of vaccination
+            dt: '2021-01-01',
+            // Vaccine issuer
+            is: 'CNAM',
+            // Vaccine manufacturer, e.g., "ORG-100030215" (Biontech Manufacturing GmbH)
+            ma: 'ORG-100030215',
+            // Vaccine product, e.g., "EU/1/20/1528" (Comirnaty)
+            mp: 'EU/1/20/1528',
+            // Overall doses count
+            sd: 2,
+            // Targeted agent / disease
+            tg: '840539006',
+            // Type of vaccine used
+            vp: 'BLEACH'
         }
-        // remove the signature from the payload (HC1:...)
-        const targetPayload = code.data.slice(HEALTH_CERTIFICATE_PREFIX.length);
+        ],
+        // Date of birth
+        dob: '1993-01-01',
+        // Firstnames an lastnames, according to ICAO 9303 transliteration
+        nam: { fn: 'DARC', gn: 'JEANNE', fnt: 'DARC', gnt: 'JEANNE' },
+        // JSON schema / certificate semantic version
+        ver: '1.3.0'
+    };
 
-        // decode the data in the base45
-        // helpful source -> https://ehealth.vyncke.org/
-        const b45decoded = base45.decode(targetPayload);
+    const strQR = await pass2qr(
+        AGLO_SIGN, SIGN_KEY_ID,  HCERT_SIGN,
+        'CNAM', // Vaccine issuer, french one here
+        1234567890 /* timestamp of vaccination */,
+        1234567890 /* timestamp for qrcode generation date */,
+        obj,
+        './new_generated.png' // path to output
+    );
+    console.log('Generated!', strQR);
 
-        // inflate the data since it has been passed into zlib before (0x78)
-        inflate(b45decoded, async (err, deflated) => {
-            if (err) return reject(err);
-
-            // decode whole payload (COSE/CBOR), returned as a js Map
-            const objBase = await cbor.decodeFirst(deflated);
-            const partUser = objBase.toJSON().value[2];
-
-            // decode certificate / user payload, returned as a js Map
-            const objUser = await cbor.decodeFirst(partUser);
-            const certData = objUser.get(CLAIM_KEY_CERT);
-            const userData = certData.get(CLAIM_KEY_V1EU);
-
-            return resolve(userData);
-        });
-    });
 }
