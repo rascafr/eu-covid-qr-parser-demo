@@ -1,6 +1,6 @@
-# EU Covid QR code parser
+# EU Covid QR extractor & generator
 
-Quick Node.js PoC to parse and create QR codes images with european vaccination certificate QR code
+Quick Node.js PoC to parse and generate european vaccination certificate QR codes
 
 ## How it works
 
