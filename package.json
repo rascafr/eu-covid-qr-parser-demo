@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Quick Node.js PoC to parse images with european vaccination certificate QR code",
   "main": "index.js",
+  "engines" : {
+    "node" : ">=12"
+  },
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"

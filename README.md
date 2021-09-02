@@ -10,6 +10,14 @@ Read image -> find & decode QRcode -> remove HC1 (health certificate) prefix -> 
 
 Same thing for the QRcode creation... reverse order.
 
+## Prerequisites
+
+**Requires Node.js 12 at least**, otherwise you'll get the `ReferenceError: TextDecoder is not defined` error.
+
+```bash
+nvm use 12
+```
+
 ## Install
 
 ```bash
