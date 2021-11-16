@@ -2,7 +2,13 @@
 
 Quick Node.js PoC to parse and generate european vaccination certificate QR codes
 
-> 🛑 **DISCLAIMER PLEASE READ 🛑 I'm receiving a lot of messages from people asking if it's possible to create a valid EU Covid Vaccination QRcode so I'll make it clear for you here: NO YOU CAN'T**. The QRcode is signed with a private key to certify its authenticity, so except if you found a way to get it (which is nearly impossible), yes, your QRcode will be decoded with your personal details BUT marked as invalid. This project allows you to play with the QRcodes, not to do forgery, or counterfeiting. If it's your main goal, please: educate yourself, and get vaccinated.
+> 🛑 **DISCLAIMER PLEASE READ** 🛑 
+> 
+> **I'm receiving a lot of messages from people asking if it's possible to create a valid EU Covid Vaccination QRcode so I'll make it clear for you here: NO YOU CAN'T**.
+> 
+> The QRcode is signed with a private key to certify its authenticity, so except if you found a way to get it (which is nearly impossible), yes, your QRcode will be decoded with your personal details BUT marked as invalid. This project allows you to play with the QRcodes, not to do forgery, or counterfeiting.
+> 
+> If it's your main goal, please: educate yourself, and get vaccinated.
 
 ## How it works
 
