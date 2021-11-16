@@ -7,7 +7,12 @@ Quick Node.js PoC to parse and generate european vaccination certificate QR code
 ## How it works
 
 ```
-Read image -> find & decode QRcode -> remove HC1 (health certificate) prefix -> base45 decode -> CBOR decode required fields
+1) Read image
+2) Find & decode QRcode
+3) Remove HC1 (health certificate) prefix
+4) Base45 decode
+5) zlib inflate (decompress)
+6) CBOR decode required fields
 ```
 
 Same thing for the QRcode creation... reverse order.
